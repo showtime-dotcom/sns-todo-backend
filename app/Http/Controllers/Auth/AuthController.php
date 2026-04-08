@@ -6,16 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password; // ← ★強固なパスワードルールのための部品
 
 class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        // 1. 荷物検査（送られてきたデータに不備がないか石橋を叩く）
+        // 1. 荷物検査（名前は30文字上限、パスワードは強固なルールを適用）
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:30',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            // パスワードには英語の小文字、大文字、数字、記号を最低一つ以上入れないとダメ
+            'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers()->symbols()],
         ]);
 
         // 2. データベースへ登録（パスワードはそのまま入れず暗号化する）
