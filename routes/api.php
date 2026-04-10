@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TodoController;
+use App\Http\Controllers\Auth\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,3 +32,5 @@ Route::put('/todos/{id}', [TodoController::class, 'update']);
 Route::delete('/todos/completed', [TodoController::class, 'destroyCompleted']);
 
 Route::delete('/todos/{id}', [TodoController::class, 'destroy']);
+
+Route::post('/register', [AuthController::class, 'register']);
