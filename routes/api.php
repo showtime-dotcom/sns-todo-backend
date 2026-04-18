@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\TodoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\TodoController;
+// use App\Http\Controllers\Api\TodoController;
 use App\Http\Controllers\Auth\AuthController;
 
 /*
@@ -34,3 +35,7 @@ Route::delete('/todos/completed', [TodoController::class, 'destroyCompleted']);
 Route::delete('/todos/{id}', [TodoController::class, 'destroy']);
 
 Route::post('/register', [AuthController::class, 'register']);
+
+Route::get('/todos', [TodoController::class, 'index']); // 一覧ちょうだい、の道
+
+Route::post('/todos', [TodoController::class, 'store']); // 新しく保存して、の道
