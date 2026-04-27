@@ -1,41 +1,50 @@
 <?php
 
 use App\Http\Controllers\TodoController;
+// register用↓
+use App\Http\Controllers\Auth\AuthController;
+// login用↓
+use App\Http\Controllers\Api\AuthController as ApiAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\Api\TodoController;
-use App\Http\Controllers\Auth\AuthController;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// ==========================
+// 認証なしで使えるAPI
+// ==========================
 
-// スプレッドシートの定義通り: GET /api/todos
-Route::get('/todos', [TodoController::class, 'index']);
-
-Route::get('/todos/{id}', [TodoController::class, 'show']);
-
-Route::post('/todos', [TodoController::class, 'store']);
-
-Route::put('/todos/{id}', [TodoController::class, 'update']);
-
-Route::delete('/todos/completed', [TodoController::class, 'destroyCompleted']);
-
-Route::delete('/todos/{id}', [TodoController::class, 'destroy']);
-
+// 新規登録
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::get('/todos', [TodoController::class, 'index']); // 一覧ちょうだい、の道
+// ログイン
+Route::post('/login', [ApiAuthController::class, 'login']);
 
-Route::post('/todos', [TodoController::class, 'store']); // 新しく保存して、の道
+
+// ==========================
+// ログイン済みだけ使えるAPI
+// ==========================
+Route::middleware('auth:sanctum')->group(function () {
+
+    // ログイン中のユーザー情報
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    Route::get('/me', [ApiAuthController::class, 'me']);
+
+    // ログアウト
+    Route::post('/logout', [ApiAuthController::class, 'logout']);
+
+    // ToDo関連
+    Route::get('/todos', [TodoController::class, 'index']);
+    Route::get('/todos/{id}', [TodoController::class, 'show']);
+    Route::post('/todos', [TodoController::class, 'store']);
+    Route::put('/todos/{id}', [TodoController::class, 'update']);
+    Route::delete('/todos/completed', [TodoController::class, 'destroyCompleted']);
+    Route::delete('/todos/{id}', [TodoController::class, 'destroy']);
+});
