@@ -5,6 +5,9 @@ use App\Http\Controllers\TodoController;
 use App\Http\Controllers\Auth\AuthController;
 // login用↓
 use App\Http\Controllers\Api\AuthController as ApiAuthController;
+// 投稿機能用↓
+use App\Http\Controllers\Api\PostController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -47,4 +50,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/todos/{id}', [TodoController::class, 'update']);
     Route::delete('/todos/completed', [TodoController::class, 'destroyCompleted']);
     Route::delete('/todos/{id}', [TodoController::class, 'destroy']);
+
+    // 投稿関連
+    Route::get('/posts', [PostController::class, 'index']);
+    Route::post('/posts', [PostController::class, 'store']);
+    Route::put('/posts/{post}', [PostController::class, 'update']);
+    Route::delete('/posts/{post}', [PostController::class, 'destroy']);
 });
