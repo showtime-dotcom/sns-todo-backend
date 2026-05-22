@@ -15,4 +15,16 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // この投稿にいいねしたユーザーを取得する繋がり
+    public function likedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'likes')->withTimestamps();
+    }
+
+    // この投稿をブックマークしたユーザーを取得する繋がり
+    public function bookmarkedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'bookmarks')->withTimestamps();
+    }
 }

@@ -9,6 +9,10 @@ use App\Http\Controllers\Api\AuthController as ApiAuthController;
 use App\Http\Controllers\Api\PostController;
 // プロフィール画面用
 use App\Http\Controllers\ProfileController;
+// イイネ機能用
+use App\Http\Controllers\LikeController;
+// ブックマーク機能用
+use App\Http\Controllers\BookmarkController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -61,4 +65,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // プロフィール画面用
     Route::put('/profile', [ProfileController::class, 'update']);
+
+    // いいね・ブックマーク関連
+    Route::post('/posts/{post}/like', [LikeController::class, 'toggle']);
+    Route::post('/posts/{post}/bookmark', [BookmarkController::class, 'toggle']);
 });

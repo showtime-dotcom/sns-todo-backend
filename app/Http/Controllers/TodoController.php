@@ -10,7 +10,7 @@ class TodoController extends Controller
     // ① Todoの一覧を渡す（取得）
     public function index()
     {
-        $todos = Todo::where('user_id', 1)->orderBy('created_at', 'desc')->get();
+        $todos = Todo::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
         return response()->json($todos);
     }
 
@@ -22,7 +22,7 @@ class TodoController extends Controller
         ]);
 
         $todo = Todo::create([
-            'user_id' => 1,
+            'user_id' => auth()->id(),
             'title' => $request->title,
             'description' => $request->description ?? null,
             'category' => $request->category ?? null,
@@ -37,7 +37,7 @@ class TodoController extends Controller
     // ③ 指定されたTodo1つだけを渡す（詳細取得）
     public function show($id)
     {
-        $todo = Todo::find($id);
+        $todo = Todo::where('id', $id)->where('user_id', auth()->id())->first();
         if (!$todo) {
             return response()->json(['message' => '見つかりません'], 404);
         }
@@ -47,12 +47,11 @@ class TodoController extends Controller
     // ④ 既存のTodoを更新する（編集）
     public function update(Request $request, $id)
     {
-        $todo = Todo::find($id);
+        $todo = Todo::where('id', $id)->where('user_id', auth()->id())->first();
         if (!$todo) {
             return response()->json(['message' => '見つかりません'], 404);
         }
 
-        // 送られてきたデータがあれば上書きする
         $todo->title = $request->title ?? $todo->title;
         $todo->description = $request->description ?? $todo->description;
         $todo->category = $request->category ?? $todo->category;
@@ -60,7 +59,6 @@ class TodoController extends Controller
         $todo->due_date = $request->due_date ?? $todo->due_date;
         $todo->status = $request->status ?? $todo->status;
 
-        // 完了日時（completed_at）の自動記録・解除
         if ($request->status === 'completed') {
             $todo->completed_at = now();
         } else {
@@ -68,20 +66,25 @@ class TodoController extends Controller
         }
 
         $todo->save();
-
-        // 更新が終わった最新のデータをReactに返す
         return response()->json($todo);
     }
 
     // ⑤ Todoを削除する
     public function destroy($id)
     {
-        $todo = Todo::find($id);
+        $todo = Todo::where('id', $id)->where('user_id', auth()->id())->first();
         if ($todo) {
             $todo->delete();
         }
-
-        // 削除が終わったら「OK」という合図だけを返す（画面移動はReactがやります）
         return response()->json(['message' => '削除完了'], 200);
+    }
+
+    // ⑥ 完了済みのToDoを一括削除する
+    public function destroyCompleted()
+    {
+        $deletedCount = Todo::where('user_id', auth()->id())->where('status', 'completed')->delete();
+        return response()->json([
+            'message' => "完了済みのタスクを {$deletedCount} 件削除しました"
+        ]);
     }
 }
