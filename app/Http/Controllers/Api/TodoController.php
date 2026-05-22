@@ -52,7 +52,7 @@ class TodoController extends Controller
             'due_date'    => $validated['due_date'] ?? now()->format('Y-m-d'),
 
             // 自動補完するデータ（ログイン機能ができるまでは仮置き）
-            'user_id'     => 1,
+            'user_id'     => auth()->id(),
             'priority'    => '普通',
             'status'      => '未着手',
             'category'    => '一般',

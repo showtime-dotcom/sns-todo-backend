@@ -10,8 +10,7 @@ class TodoController extends Controller
     // ① Todoの一覧を渡す（取得）
     public function index()
     {
-        $todos = Todo::where('user_id', 1)->orderBy('created_at', 'desc')->get();
-        return response()->json($todos);
+        $todos = Todo::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
     }
 
     // ② 新しいTodoを保存する（作成）
@@ -22,7 +21,7 @@ class TodoController extends Controller
         ]);
 
         $todo = Todo::create([
-            'user_id' => 1,
+            'user_id' => auth()->id(),
             'title' => $request->title,
             'description' => $request->description ?? null,
             'category' => $request->category ?? null,
