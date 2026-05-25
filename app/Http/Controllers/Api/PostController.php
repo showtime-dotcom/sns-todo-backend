@@ -9,12 +9,23 @@ use Illuminate\Http\Request;
 class PostController extends Controller
 {
     // 投稿一覧
-    public function index()
-    {
-        return Post::with('user:id,name')
-            ->latest()
-            ->get();
-    }
+public function index()
+{
+    $userId = auth()->id();
+
+    return Post::with('user:id,name')
+        ->withCount(['likedByUsers as likes_count'])
+        ->withExists([
+            'likedByUsers as is_liked' => function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            },
+            'bookmarkedByUsers as is_bookmarked' => function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            },
+        ])
+        ->latest()
+        ->get();
+}
 
     // 投稿作成
     public function store(Request $request)
