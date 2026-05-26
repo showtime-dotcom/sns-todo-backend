@@ -49,11 +49,13 @@ class User extends Authenticatable
     }
 
     // ユーザーがブックマークした投稿を取得する繋がり
-    public function bookmarkedPosts()
+    // 💡 これを追加：ユーザーがブックマークした投稿一覧との繋がり
+    public function bookmarks()
     {
+        // 投稿（Postモデル）と多対多の関係で繋ぐ
+        // 中間テーブルの名前が 'bookmarks' の場合は以下で動きます
         return $this->belongsToMany(Post::class, 'bookmarks')->withTimestamps();
     }
-
     // 自分がフォローしているユーザー達を取得する設定
     public function followings()
     {

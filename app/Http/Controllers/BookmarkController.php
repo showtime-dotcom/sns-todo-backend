@@ -7,25 +7,32 @@ use Illuminate\Http\Request;
 
 class BookmarkController extends Controller
 {
-    // 💡 これを追加：自分がブックマークした投稿一覧を取得する処理
+    // 自分がブックマークした投稿一覧を取得する処理（ここは触らなくてOK）
     public function index()
     {
-        // エディタの勘違いを正すためのメモ
         /** @var \App\Models\User $user */
         $user = auth()->user();
-
-        // 自分がブックマークした投稿を新しい順に取得
-        // ※もしUser.phpでのリレーション名が 'bookmarks' ではなく 'bookmarkedPosts' などの場合は、
-        // ご自身の環境に合わせて 'bookmarks()' の部分を変更してください。
         $bookmarkedPosts = $user->bookmarks()->with('user')->latest()->get();
-
         return response()->json($bookmarkedPosts);
     }
 
-    // 既存のブックマーク追加・解除処理（この部分はそのまま残す）
+    // 💡 ここを完全に書き換えます！
     public function toggle($postId)
     {
         $post = Post::findOrFail($postId);
-        // ... (現在書かれているコード) ...
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        // toggle() メソッドを使うと、既に存在していれば削除（解除）、なければ挿入（保存）を自動で行ってくれます
+        // $result['attached'] にデータが入っていれば「新しく保存した」という意味になります
+        $result = $user->bookmarks()->toggle($post->id);
+
+        $isBookmarked = count($result['attached']) > 0;
+
+        // React側に「現在の状態」をハッキリと返す
+        return response()->json([
+            'status' => 'success',
+            'bookmarked' => $isBookmarked
+        ]);
     }
 }

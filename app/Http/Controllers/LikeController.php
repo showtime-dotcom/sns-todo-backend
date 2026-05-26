@@ -3,26 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Http\Request;
 
 class LikeController extends Controller
 {
-    // いいねの追加・解除を自動判定する処理
-    public function toggle($postId)
+    // 💡 これを追加：自分がいいねした投稿一覧を取得する処理
+    public function index()
     {
-        $post = Post::findOrFail($postId);
-
-        // 💡 エディタの勘違いを正すためのメモを追加
         /** @var \App\Models\User $user */
         $user = auth()->user();
 
-        // toggle()がよしなに判定して追加・削除を行ってくれる
-        $result = $user->likedPosts()->toggle($post->id);
+        // 自分がいいねした投稿を新しい順に取得
+        $likedPosts = $user->likedPosts()->with('user')->latest()->get();
 
-        $isLiked = count($result['attached']) > 0;
+        return response()->json($likedPosts);
+    }
 
-        return response()->json([
-            'message' => $isLiked ? 'いいねしました' : 'いいねを解除しました',
-            'liked' => $isLiked
-        ]);
+    // 既存のいいね追加・解除処理（この部分はそのまま残す）
+    public function toggle($postId)
+    {
+        $post = Post::findOrFail($postId);
+        // ... (現在書かれているコード) ...
     }
 }
