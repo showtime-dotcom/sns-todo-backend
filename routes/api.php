@@ -61,5 +61,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // いいね・ブックマーク関連
     Route::post('/posts/{post}/like', [LikeController::class, 'toggle']);
+    Route::get('/bookmarks', [BookmarkController::class, 'index']);
     Route::post('/posts/{post}/bookmark', [BookmarkController::class, 'toggle']);
 });
