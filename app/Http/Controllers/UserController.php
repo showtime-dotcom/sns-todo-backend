@@ -7,23 +7,26 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    // ユーザー一覧の取得と、あいまい検索を行う処理
     public function index(Request $request)
     {
-        // React側から送られてくる検索ワード（keyword）を受け取る
-        $keyword = $request->input('keyword');
-
-        // ベースとなる検索条件：自分自身は一覧から省く（自分をフォローできないようにするため）
+        // 自分以外のユーザーを取得する（ここで自分を除外してくれています）
         $query = User::where('id', '!=', auth()->id());
 
-        // 検索ワードが入力されている場合のみ、名前で「あいまい検索」を追加する
-        if (!empty($keyword)) {
-            // %で囲むことで「その文字が含まれていればOK」という条件になる
-            $query->where('name', 'LIKE', "%{$keyword}%");
+        // キーワード検索がある場合の絞り込み
+        if ($request->filled('keyword')) {
+            $query->where('name', 'LIKE', '%' . $request->keyword . '%');
         }
 
-        // データを取得してReact側に返す
-        $users = $query->orderBy('id', 'desc')->get();
+        $users = $query->get();
+
+        // 💡 追加：現在のログインユーザーが「フォローしている人たちのID一覧」をまとめて取得する
+        $followingIds = auth()->user()->followings()->pluck('users.id')->toArray();
+
+        // 💡 追加：各ユーザーのデータに「is_following（フォロー中かどうかのTrue/False）」をくっつける
+        $users->transform(function ($user) use ($followingIds) {
+            $user->is_following = in_array($user->id, $followingIds);
+            return $user;
+        });
 
         return response()->json($users);
     }

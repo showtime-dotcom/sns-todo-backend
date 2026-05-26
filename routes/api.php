@@ -1,20 +1,14 @@
 <?php
 
 use App\Http\Controllers\TodoController;
-// register用↓
 use App\Http\Controllers\Auth\AuthController;
-// login用↓
 use App\Http\Controllers\Api\AuthController as ApiAuthController;
-// 投稿機能用↓
 use App\Http\Controllers\Api\PostController;
-// プロフィール画面用
 use App\Http\Controllers\ProfileController;
-// イイネ機能用
 use App\Http\Controllers\LikeController;
-// ブックマーク機能用
 use App\Http\Controllers\BookmarkController;
-// ユーザー検索機能用
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserController;   // 検索機能用（masterから来たもの）
+use App\Http\Controllers\FollowController; // フォロー機能用（今回追加したもの）
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,20 +19,12 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// ==========================
-// 認証なしで使えるAPI
-// ==========================
-
 // 新規登録
 Route::post('/register', [AuthController::class, 'register']);
 
 // ログイン
 Route::post('/login', [ApiAuthController::class, 'login']);
 
-
-// ==========================
-// ログイン済みだけ使えるAPI
-// ==========================
 Route::middleware('auth:sanctum')->group(function () {
 
     // ログイン中のユーザー情報
@@ -47,8 +33,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/me', [ApiAuthController::class, 'me']);
-
-    // ログアウト
     Route::post('/logout', [ApiAuthController::class, 'logout']);
 
     // ToDo関連
@@ -66,9 +50,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/posts/{post}', [PostController::class, 'destroy']);
 
     // プロフィール画面用
+    Route::get('/profile', [ProfileController::class, 'show']);
     Route::put('/profile', [ProfileController::class, 'update']);
-    // ユーザー検索関連
+
+    // 検索機能
     Route::get('/users', [UserController::class, 'index']);
+
+    // フォロー機能
+    Route::post('/users/{id}/follow', [FollowController::class, 'toggle']);
 
     // いいね・ブックマーク関連
     Route::post('/posts/{post}/like', [LikeController::class, 'toggle']);
