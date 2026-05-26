@@ -53,4 +53,16 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Post::class, 'bookmarks')->withTimestamps();
     }
+
+    // 自分がフォローしているユーザー達を取得する設定
+    public function followings()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'followed_id')->withTimestamps();
+    }
+
+    // 自分をフォローしているユーザー達（フォロワー）を取得する設定
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id')->withTimestamps();
+    }
 }

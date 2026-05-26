@@ -13,6 +13,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LikeController;
 // ブックマーク機能用
 use App\Http\Controllers\BookmarkController;
+// フォロー機能用
+use App\Http\Controllers\FollowController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +67,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // プロフィール画面用
     Route::put('/profile', [ProfileController::class, 'update']);
+    // フォロー機能
+    Route::post('/users/{id}/follow', [FollowController::class, 'toggle']);
 
     // いいね・ブックマーク関連
     Route::post('/posts/{post}/like', [LikeController::class, 'toggle']);
