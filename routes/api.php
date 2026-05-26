@@ -13,6 +13,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LikeController;
 // ブックマーク機能用
 use App\Http\Controllers\BookmarkController;
+// ユーザー検索機能用
+use App\Http\Controllers\UserController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +67,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // プロフィール画面用
     Route::put('/profile', [ProfileController::class, 'update']);
+    // ユーザー検索関連
+    Route::get('/users', [UserController::class, 'index']);
 
     // いいね・ブックマーク関連
     Route::post('/posts/{post}/like', [LikeController::class, 'toggle']);
