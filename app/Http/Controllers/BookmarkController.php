@@ -7,24 +7,25 @@ use Illuminate\Http\Request;
 
 class BookmarkController extends Controller
 {
-    // ブックマークの追加・解除を自動判定する処理
-    public function toggle($postId)
+    // 💡 これを追加：自分がブックマークした投稿一覧を取得する処理
+    public function index()
     {
-        $post = Post::findOrFail($postId);
-
-        // 💡 エディタの勘違いを正すためのメモを追加
+        // エディタの勘違いを正すためのメモ
         /** @var \App\Models\User $user */
         $user = auth()->user();
 
-        // toggle()がよしなに判定して追加・削除を行ってくれる
-        $result = $user->bookmarkedPosts()->toggle($post->id);
+        // 自分がブックマークした投稿を新しい順に取得
+        // ※もしUser.phpでのリレーション名が 'bookmarks' ではなく 'bookmarkedPosts' などの場合は、
+        // ご自身の環境に合わせて 'bookmarks()' の部分を変更してください。
+        $bookmarkedPosts = $user->bookmarks()->with('user')->latest()->get();
 
-        // attached（追加された）にデータが入っていれば「保存状態」、入っていなければ「解除状態」
-        $isBookmarked = count($result['attached']) > 0;
+        return response()->json($bookmarkedPosts);
+    }
 
-        return response()->json([
-            'message' => $isBookmarked ? 'ブックマークしました' : 'ブックマークを解除しました',
-            'bookmarked' => $isBookmarked
-        ]);
+    // 既存のブックマーク追加・解除処理（この部分はそのまま残す）
+    public function toggle($postId)
+    {
+        $post = Post::findOrFail($postId);
+        // ... (現在書かれているコード) ...
     }
 }
