@@ -59,6 +59,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // フォロー機能
     Route::post('/users/{id}/follow', [FollowController::class, 'toggle']);
 
+    // 💡 フォロー中・フォロワー一覧のAPI道路を開通
+    Route::get('users/{id}/followings', [FollowController::class, 'followings']);
+    Route::get('users/{id}/followers', [FollowController::class, 'followers']);
+
     // いいね・ブックマーク関連
     Route::get('/likes', [LikeController::class, 'index']);
     Route::post('/posts/{post}/like', [LikeController::class, 'toggle']);
