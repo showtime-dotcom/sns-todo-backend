@@ -7,6 +7,27 @@ use Illuminate\Http\Request;
 
 class FollowController extends Controller
 {
+    public function followings($userId)
+    {
+        $user = User::findOrFail($userId);
+
+        // そのユーザーのフォロー中メンバーを取得（名前やIDなど）
+        $followings = $user->followings()->get();
+
+        return response()->json($followings);
+    }
+
+    // 💡 これを追加：特定のユーザーを「フォローしてくれている」人達（フォロワー）のリストを取得
+    public function followers($userId)
+    {
+        $user = User::findOrFail($userId);
+
+        // そのユーザーのフォロワーメンバーを取得
+        $followers = $user->followers()->get();
+
+        return response()->json($followers);
+    }
+
     // フォロー・フォロー解除を自動判定する処理
     public function toggle($userId)
     {

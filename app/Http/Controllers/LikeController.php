@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class LikeController extends Controller
 {
-    // 💡 これを追加：自分がいいねした投稿一覧を取得する処理
+    // 自分がいいねした投稿一覧を取得する処理（ここは触らなくてOK）
     public function index()
     {
         /** @var \App\Models\User $user */
@@ -19,10 +19,23 @@ class LikeController extends Controller
         return response()->json($likedPosts);
     }
 
-    // 既存のいいね追加・解除処理（この部分はそのまま残す）
+    // 💡 ここを完全に書き換えます！
     public function toggle($postId)
     {
         $post = Post::findOrFail($postId);
-        // ... (現在書かれているコード) ...
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        // toggle() で中間テーブル『likes』のレコードを自動でON/OFF（追加/削除）します
+        $result = $user->likedPosts()->toggle($post->id);
+
+        // $result['attached'] にデータが入っていれば「新しくいいねした（true）」となります
+        $isLiked = count($result['attached']) > 0;
+
+        // React側（PostPage.jsx）の「result.liked」という期待通りの形で返事をする
+        return response()->json([
+            'status' => 'success',
+            'liked' => $isLiked
+        ]);
     }
 }
