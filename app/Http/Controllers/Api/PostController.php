@@ -9,23 +9,44 @@ use Illuminate\Http\Request;
 class PostController extends Controller
 {
     // 投稿一覧
-public function index()
-{
-    $userId = auth()->id();
+    public function index()
+    {
+        $userId = auth()->id();
 
-    return Post::with('user:id,name')
-        ->withCount(['likedByUsers as likes_count'])
-        ->withExists([
-            'likedByUsers as is_liked' => function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            },
-            'bookmarkedByUsers as is_bookmarked' => function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            },
-        ])
-        ->latest()
-        ->get();
-}
+        return Post::with('user:id,name')
+            ->withCount(['likedByUsers as likes_count'])
+            ->withExists([
+                'likedByUsers as is_liked' => function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                },
+                'bookmarkedByUsers as is_bookmarked' => function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                },
+            ])
+            ->latest()
+            ->get();
+    }
+
+    // 投稿詳細
+    public function show(Post $post)
+    {
+        $userId = auth()->id();
+
+        return $post
+            ->load([
+                'user:id,name',
+                'comments.user:id,name',
+            ])
+            ->loadCount(['likedByUsers as likes_count'])
+            ->loadExists([
+                'likedByUsers as is_liked' => function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                },
+                'bookmarkedByUsers as is_bookmarked' => function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                },
+            ]);
+    }
 
     // 投稿作成
     public function store(Request $request)
