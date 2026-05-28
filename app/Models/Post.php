@@ -27,4 +27,11 @@ class Post extends Model
     {
         return $this->belongsToMany(User::class, 'bookmarks')->withTimestamps();
     }
+
+    // この投稿に対するコメントを取得する繋がり
+    public function comments()
+    {
+    return $this->hasMany(Comment::class);
+    }
+
 }

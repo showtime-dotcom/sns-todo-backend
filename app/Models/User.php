@@ -67,4 +67,12 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id')->withTimestamps();
     }
+
+
+    // 1人のユーザーは、複数のコメントを書ける
+    public function comments()
+    {
+    return $this->hasMany(Comment::class);
+    }
+
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\UserController;   // 検索機能用（masterから来たもの）
 use App\Http\Controllers\FollowController; // フォロー機能用（今回追加したもの）
+use App\Http\Controllers\Api\CommentController;// コメント機能用（今回追加したもの）
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -46,8 +47,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // 投稿関連
     Route::get('/posts', [PostController::class, 'index']);
     Route::post('/posts', [PostController::class, 'store']);
+    Route::get('/posts/{post}', [PostController::class, 'show']);//コメント機能用に投稿詳細追加
     Route::put('/posts/{post}', [PostController::class, 'update']);
     Route::delete('/posts/{post}', [PostController::class, 'destroy']);
+
+    // コメント関連
+    Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
+    Route::put('/comments/{comment}', [CommentController::class, 'update']);
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
 
     // プロフィール画面用
     Route::get('/profile', [ProfileController::class, 'show']);
