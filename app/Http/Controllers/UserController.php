@@ -20,8 +20,11 @@ class UserController extends Controller
         $users = $query->get();
 
         // 💡 追加：現在のログインユーザーが「フォローしている人たちのID一覧」をまとめて取得する
-        $followingIds = auth()->user()->followings()->pluck('users.id')->toArray();
-
+// 💡 エディタの勘違いを正すためのメモを追加
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+        $followingIds = $user->followings()->pluck('users.id')->toArray();
+        
         // 💡 追加：各ユーザーのデータに「is_following（フォロー中かどうかのTrue/False）」をくっつける
         $users->transform(function ($user) use ($followingIds) {
             $user->is_following = in_array($user->id, $followingIds);
