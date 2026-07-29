@@ -9,7 +9,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\UserController;   // 検索機能用（masterから来たもの）
 use App\Http\Controllers\FollowController; // フォロー機能用（今回追加したもの）
-use App\Http\Controllers\Api\CommentController;// コメント機能用（今回追加したもの）
+use App\Http\Controllers\Api\CommentController; // コメント機能用（今回追加したもの）
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -47,7 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // 投稿関連
     Route::get('/posts', [PostController::class, 'index']);
     Route::post('/posts', [PostController::class, 'store']);
-    Route::get('/posts/{post}', [PostController::class, 'show']);//コメント機能用に投稿詳細追加
+    Route::get('/posts/{post}', [PostController::class, 'show']); //コメント機能用に投稿詳細追加
     Route::put('/posts/{post}', [PostController::class, 'update']);
     Route::delete('/posts/{post}', [PostController::class, 'destroy']);
 
@@ -75,4 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts/{post}/like', [LikeController::class, 'toggle']);
     Route::get('/bookmarks', [BookmarkController::class, 'index']);
     Route::post('/posts/{post}/bookmark', [BookmarkController::class, 'toggle']);
+
+    // プロフィール画像アップロード
+    Route::post('/user/avatar', [App\Http\Controllers\Api\AvatarController::class, 'update']);
 });
